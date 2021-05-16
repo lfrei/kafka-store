@@ -1,21 +1,30 @@
 package main
 
 import (
-	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
-func productHandler(w http.ResponseWriter, r *http.Request) {
-	// replace
-	w.Write([]byte("Iphone,Ipad"))
+func getProducts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message": "get called"}`))
 }
 
-func startWebServer(endpoint string, port int) {
-	http.HandleFunc(endpoint, productHandler)
-	log.Fatal(http.ListenAndServe(fmt.Sprint(":", port), nil))
+func postProducts(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"message": "post called"}`))
+}
+
+func startWebServer(endpoint string) {
+	r := mux.NewRouter()
+	r.HandleFunc(endpoint, getProducts).Methods(http.MethodGet)
+	r.HandleFunc(endpoint, postProducts).Methods(http.MethodPost)
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
 func main() {
-	startWebServer("/products", 8080)
+	startWebServer("/products")
 }
