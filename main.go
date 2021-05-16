@@ -23,7 +23,7 @@ func getProduct(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func postProducts(w http.ResponseWriter, r *http.Request) {
+func postProduct(w http.ResponseWriter, r *http.Request) {
 	productId := mux.Vars(r)["id"]
 	product, err := ioutil.ReadAll(r.Body)
 	if err == nil {
@@ -40,7 +40,7 @@ func postProducts(w http.ResponseWriter, r *http.Request) {
 func startWebServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/product/{id}", getProduct).Methods(http.MethodGet)
-	r.HandleFunc("/product/{id}", postProducts).Methods(http.MethodPost)
+	r.HandleFunc("/product/{id}", postProduct).Methods(http.MethodPost)
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
 
