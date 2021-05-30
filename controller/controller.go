@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/lfrei/kafka-store/store"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"sync"
 )
 
 func getProduct(w http.ResponseWriter, r *http.Request) {
@@ -31,9 +33,13 @@ func jsonResponse(w http.ResponseWriter, statusCode int, message string) {
 	w.Write([]byte(message))
 }
 
-func Start() {
+func Start(wg *sync.WaitGroup, endpoint string) {
+	fmt.Println("Start REST Controller for endpoint", endpoint)
+
 	r := mux.NewRouter()
-	r.HandleFunc("/product/{id}", getProduct).Methods(http.MethodGet)
-	r.HandleFunc("/product/{id}", postProduct).Methods(http.MethodPost)
+	r.HandleFunc("/"+endpoint+"/{id}", getProduct).Methods(http.MethodGet)
+	r.HandleFunc("/"+endpoint+"/{id}", postProduct).Methods(http.MethodPost)
 	log.Fatal(http.ListenAndServe(":8080", r))
+
+	wg.Done()
 }
