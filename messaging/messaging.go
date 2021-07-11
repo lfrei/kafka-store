@@ -7,6 +7,12 @@ import (
 	"sync"
 )
 
+func processMessage(msg *kafka.Message) {
+	id := string(msg.Key)
+	product := string(msg.Value)
+	store.AddProduct(id, product)
+}
+
 func Start(wg *sync.WaitGroup, topic string) {
 	fmt.Println("Start Kafka Consumer for topic", topic)
 
@@ -29,9 +35,7 @@ func Start(wg *sync.WaitGroup, topic string) {
 	for {
 		msg, err := c.ReadMessage(-1)
 		if err == nil {
-			id := string(msg.Key)
-			product := string(msg.Value)
-			store.AddProduct(id, product)
+			processMessage(msg)
 		}
 	}
 
